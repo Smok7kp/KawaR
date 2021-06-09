@@ -25,11 +25,10 @@ wide
 (wide <- rbind(colnames(import), wide))
 
 plot(wide[1,], wide[2,], main="Wspolczynnik importu do eksportu", xlab="rok", ylab="wspolczynnik", type="h", col=1, xaxt="n")
+text(wide[2,], wide[1,], labels = wide[2,], pos=1)
+lines(wide[1,], wide[2,])
+points(wide[1,], wide[2,], pch=20)
 axis(1, at = seq(1990, 2019, by = 1), las=2)
-
-# libraries:
-library(ggplot2)
-library(gganimate)
 
 
 
