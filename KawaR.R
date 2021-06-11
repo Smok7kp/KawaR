@@ -30,39 +30,22 @@ for (n in 1:30){ #jest 30 lat
 #points(wide[1,], wide[2,], pch=20)
 #axis(1, at = seq(1990, 2019, by = 1), las=2)
 
-library(ggplot2)
 
-wide2<-data.frame(wide)
-
-import2 <- import[37,]
-eksport2 <- eksport[56,]
-dane<-data.frame(import2, eksport2)
-
-iks<-data.frame(wide[1,])
-
-ggplot(dane, aes(fill="dupa", y=seq(1990, 2019, by = 1), x=iks))+
+(sp1 <- rep(1990:2019, times=2))
+(specie <- sort(sp1))
+(condition <- rep(c("import","eksport"), times=30))
+v1<-vector()
+for (n in 0:60){
+ if(n%%2==0){
+  v1[n]<- eksport[56,(n/2)]
+ }
+ if(n%%2==1){
+  v1[n]<- import[37,(as.integer(n/2)+1)]
+ }
+}
+(value<-unlist(v1))
+ggplot(data, aes(fill=condition, y=value, x=specie)) + 
   geom_bar(position="dodge", stat="identity")
-
-
-
-?ggplot
-
-
-
-
-
-
-barplot(w1, main="Wspolczynnik importu do eksportu", xlab="rok", ylab="wspolczynnik", ylim=c(0,1.2),cex.names=0.8, names.arg=wide[1,])
-
-?barplot
-
-wide
-
-str(wide)
-
-str(w1)
-
-wide
 
 
 
