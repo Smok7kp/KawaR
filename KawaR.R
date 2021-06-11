@@ -17,20 +17,22 @@ import <- as.data.frame(sapply(i2, as.numeric))
 
 #Obrobka
 #wspolczynnik importu do eksportu
-wide<-vector()
-for (n in 1:30){
-(wide[n]<-(import[37,n]/eksport[56,n]))
+wide<-vector() #tworzymy pusty wektor zeby zapisac w nim wartosci
+for (n in 1:30){ #jest 30 lat
+(wide[n]<-(import[37,n]/eksport[56,n])) #dla kazdego roku bierzemy sume import i dzielimy ja przez sume exportu, zapisujemy do wektora
 }
-wide
-(wide <- rbind(colnames(import), wide))
 
+(wide <- rbind(colnames(import), wide)) #dodajemy lata do wspolczynnika dla przejzystosci
+wide #wyswietlamy wspolczynnik
 plot(wide[1,], wide[2,], main="Wspolczynnik importu do eksportu", xlab="rok", ylab="wspolczynnik", type="h", col=1, xaxt="n")
 text(wide[2,], wide[1,], labels = wide[2,], pos=1)
 lines(wide[1,], wide[2,])
 points(wide[1,], wide[2,], pch=20)
 axis(1, at = seq(1990, 2019, by = 1), las=2)
 
+#min max
 
-
+which(import == min(import[37,]))
+which(import == max(import[37,]))
 
 
