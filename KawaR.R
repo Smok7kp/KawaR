@@ -46,7 +46,7 @@ for (n in 0:60){
 }
 (ilosc<-unlist(il1))
 (w2 <- rep(w1, times=2))
-(wspolczynnik <- sort(w2))
+(wspolczynnik <- sort(w2)*50000)
 
 dane_graf_1 <- data.frame(rok,legenda,ilosc,wspolczynnik)
 dane_graf_1
@@ -57,6 +57,7 @@ ggplot(dane_graf_1) +
   scale_x_continuous(breaks = scales::breaks_width(1)) +
   scale_y_continuous(breaks = scales::breaks_width(10000)) +
   geom_line(aes(x=rok, y=wspolczynnik)) 
+  
 
 #ggsave(file="wykres.eps",device="eps", path="/Users/wiktor/Desktop/KawaR", width=20, height=20, units="cm")
 
@@ -69,3 +70,36 @@ names(eksport)[which(as.vector(t(eksport[56,])) == max(as.vector(t(eksport[56,])
 
 max(as.vector(t(import[37,])))
 max(as.vector(t(eksport[56,])))
+
+install.packages("rgdal")
+library(rgdal)
+my_spdf <- readOGR( 
+  dsn= paste0("C:/Users/Rafa³/Documents/TM_WORLD_BORDERS_SIMPL-0.3.shp") , 
+  layer="TM_WORLD_BORDERS_SIMPL-0.3",
+  verbose=FALSE
+)
+
+install.packages("broom")
+library(broom)
+library(maptools)
+if (!require(gpclib)) install.packages("gpclib", type="source")
+gpclibPermit()
+spdf_fortified <- tidy(my_spdf, region = "NAME")
+
+try_require(c("gpclib", "maptools"))
+unioned <- unionSpatialPolygons(cp, invert(polys))
+# Plot it
+ggplot() +
+  geom_polygon(data = spdf_fortified, aes( x = long, y = lat, group = group), fill="#69b3a2", color="white") +
+  theme_void() 
+
+library(dplyr)
+library(africa@data)
+
+# Make sure the variable you are studying is numeric
+africa@data$POP2005 <- as.numeric( africa@data$POP2005 )
+
+# Distribution of the population per country?
+africa@data %>% 
+  ggplot( aes(x=as.numeric(POP2005))) + 
+  geom_histogram(bins=20, fill='#69b3a2', color='white')
