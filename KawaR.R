@@ -22,9 +22,8 @@ for (n in 1:30){ #jest 30 lat
 (w1[n]<-(import[37,n]/eksport[56,n])) #dla kazdego roku bierzemy sume import i dzielimy ja przez sume exportu, zapisujemy do wektora
 }
 
-(wide <- rbind(as.numeric(colnames(import)), w1)) #dodajemy lata do wspolczynnika dla przejzystosci
-wide #wyswietlamy wspolczynnik
-
+wide<- cbind(as.vector(t(as.numeric(colnames(import)))),w1) #dodajemy lata do wspolczynnika dla przejrzystosci
+wide
 
 #plot(wide[1,], wide[2,], main="Wspolczynnik importu do eksportu", xlab="rok", ylab="wspolczynnik", type="h", col=1, xaxt="n")
 #text(wide[2,], wide[1,], labels = wide[2,], pos=1)
@@ -33,25 +32,33 @@ wide #wyswietlamy wspolczynnik
 #axis(1, at = seq(1990, 2019, by = 1), las=2)
 
 library(ggplot2)
-(sp1 <- rep(1990:2019, times=2))
-(specie <- sort(sp1))
-(condition <- rep(c("import","eksport"), times=30))
-v1<-vector()
+(r1 <- rep(1990:2019, times=2))
+(rok <- sort(r1))
+(legenda <- rep(c("import","eksport"), times=30))
+il1<-vector()
 for (n in 0:60){
- if(n%%2==0){
-  v1[n]<- eksport[56,(n/2)]
- }
- if(n%%2==1){
-  v1[n]<- import[37,(as.integer(n/2)+1)]
- }
+  if(n%%2==0){
+    il1[n]<- eksport[56,(n/2)]
+  }
+  if(n%%2==1){
+    il1[n]<- import[37,(as.integer(n/2)+1)]
+  }
 }
-(value<-unlist(v1))
-data <- data.frame(specie,condition,value)
-data
-ggplot(data, aes(fill=condition, y=value, x=specie)) + 
-  geom_bar(position="dodge", stat="identity")
+(ilosc<-unlist(il1))
+(w2 <- rep(w1, times=2))
+(wspolczynnik <- sort(w2))
 
+dane_graf_1 <- data.frame(rok,legenda,ilosc,wspolczynnik)
+dane_graf_1
 
+ggplot(dane_graf_1) + 
+  geom_bar(aes(fill=legenda, y=ilosc, x=rok), position="dodge", stat="identity") +
+  expand_limits( x = c(1990,NA), y = c(0,NA)) +
+  scale_x_continuous(breaks = scales::breaks_width(1)) +
+  scale_y_continuous(breaks = scales::breaks_width(10000)) +
+  geom_line(aes(x=rok, y=wspolczynnik)) 
+
+#ggsave(file="wykres.eps",device="eps", path="/Users/wiktor/Desktop/KawaR", width=20, height=20, units="cm")
 
 
 #min max
@@ -60,3 +67,5 @@ names(import)[which(as.vector(t(import[37,])) == max(as.vector(t(import[37,]))))
 names(eksport)[which(as.vector(t(eksport[56,])) == min(as.vector(t(eksport[56,]))))] #min eksport
 names(eksport)[which(as.vector(t(eksport[56,])) == max(as.vector(t(eksport[56,]))))] #max eksport
 
+max(as.vector(t(import[37,])))
+max(as.vector(t(eksport[56,])))
