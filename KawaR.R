@@ -70,36 +70,51 @@ names(eksport)[which(as.vector(t(eksport[56,])) == max(as.vector(t(eksport[56,])
 
 max(as.vector(t(import[37,])))
 max(as.vector(t(eksport[56,])))
-
-install.packages("rgdal")
+getwd()
+#install.packages("rgdal")
 library(rgdal)
 my_spdf <- readOGR( 
-  dsn= paste0("C:/Users/Rafa³/Documents/TM_WORLD_BORDERS_SIMPL-0.3.shp") , 
+  dsn= paste0(getwd(),"/TM_WORLD_BORDERS_SIMPL-0.3.shp") , 
   layer="TM_WORLD_BORDERS_SIMPL-0.3",
   verbose=FALSE
 )
 
-install.packages("broom")
+#install.packages("broom")
 library(broom)
 library(maptools)
 if (!require(gpclib)) install.packages("gpclib", type="source")
 gpclibPermit()
 spdf_fortified <- tidy(my_spdf, region = "NAME")
 
-try_require(c("gpclib", "maptools"))
-unioned <- unionSpatialPolygons(cp, invert(polys))
-# Plot it
-ggplot() +
-  geom_polygon(data = spdf_fortified, aes( x = long, y = lat, group = group), fill="#69b3a2", color="white") +
-  theme_void() 
+africa <- my_spdf[my_spdf@data$REGION==2 , ]
+plot(africa , xlim=c(-20,60) , ylim=c(-40,40))
 
+# library
 library(dplyr)
-library(africa@data)
+library(ggplot2)
 
 # Make sure the variable you are studying is numeric
-africa@data$POP2005 <- as.numeric( africa@data$POP2005 )
+my_spdf@data$POP2005 <- as.numeric( my_spdf@data$POP2005 )
 
 # Distribution of the population per country?
-africa@data %>% 
+my_spdf@data %>% 
   ggplot( aes(x=as.numeric(POP2005))) + 
   geom_histogram(bins=20, fill='#69b3a2', color='white')
+
+# Palette of 30 colors
+library(RColorBrewer)
+my_colors <- brewer.pal(9, "Reds") 
+my_colors <- colorRampPalette(my_colors)(2)
+my_colors
+# Attribute the appropriate color to each country
+class_of_country <- cut(my_spdf@data$POP2005, 30)
+my_colors <- my_colors[as.numeric(class_of_country)]
+my_colors
+# Make the plot
+plot(my_spdf, col=my_colors ,  bg = "#A6CAE0")
+for (n in 1:36){
+print(my_spdf@data[my_spdf@data$NAME==gsub("   ", "", rownames(import)[n]),])
+}
+rownames(import)[3]
+gsub("   ", "", rownames(import)[3])
+my_spdf@data[my_spdf@data$NAME==gsub("   ", "", rownames(import)[3]),]
