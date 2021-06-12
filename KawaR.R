@@ -23,14 +23,16 @@ for (n in 1:30){ #jest 30 lat
 }
 
 (wide <- rbind(as.numeric(colnames(import)), w1)) #dodajemy lata do wspolczynnika dla przejzystosci
-#wide #wyswietlamy wspolczynnik
+wide #wyswietlamy wspolczynnik
+
+
 #plot(wide[1,], wide[2,], main="Wspolczynnik importu do eksportu", xlab="rok", ylab="wspolczynnik", type="h", col=1, xaxt="n")
 #text(wide[2,], wide[1,], labels = wide[2,], pos=1)
 #lines(wide[1,], wide[2,])
 #points(wide[1,], wide[2,], pch=20)
 #axis(1, at = seq(1990, 2019, by = 1), las=2)
 
-
+library(ggplot2)
 (sp1 <- rep(1990:2019, times=2))
 (specie <- sort(sp1))
 (condition <- rep(c("import","eksport"), times=30))
@@ -44,6 +46,8 @@ for (n in 0:60){
  }
 }
 (value<-unlist(v1))
+data <- data.frame(specie,condition,value)
+data
 ggplot(data, aes(fill=condition, y=value, x=specie)) + 
   geom_bar(position="dodge", stat="identity")
 
@@ -51,8 +55,8 @@ ggplot(data, aes(fill=condition, y=value, x=specie)) +
 
 
 #min max
-
-#which(import == min(import[37,]))
-#which(import == max(import[37,]))
-
+names(import)[which(as.vector(t(import[37,])) == min(as.vector(t(import[37,]))))] #min import
+names(import)[which(as.vector(t(import[37,])) == max(as.vector(t(import[37,]))))] #max import
+names(eksport)[which(as.vector(t(eksport[56,])) == min(as.vector(t(eksport[56,]))))] #min eksport
+names(eksport)[which(as.vector(t(eksport[56,])) == max(as.vector(t(eksport[56,]))))] #max eksport
 
