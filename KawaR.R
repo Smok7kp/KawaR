@@ -71,6 +71,7 @@ names(eksport)[which(as.vector(t(eksport[56,])) == max(as.vector(t(eksport[56,])
 max(as.vector(t(import[37,])))
 max(as.vector(t(eksport[56,])))
 
+
 #install.packages("rgdal")
 library(rgdal)
 my_spdf <- readOGR( 
@@ -86,34 +87,27 @@ Import_mapd <- Europa@data[Europa@data$NAME==gsub("   ", "", rownames(import)[2]
 for (n in 3:37){
   Import_mapd <- rbind(Import_mapd,Europa@data[Europa@data$NAME==gsub("   ", "", rownames(import)[n]),])
 }
-Import_mapd
 
-idi<-as.numeric(rownames(Import_mapd))+1
+idi<-as.numeric(rownames(Import_mapd))
 idi
 
 # Palette of 30 colors
 library(RColorBrewer)
 kolorki <- brewer.pal(9, "YlOrRd") 
-kolorki <- colorRampPalette(kolorki)(9)
-kolorki
+kolorki <- colorRampPalette(kolorki)(100)
+
 kraje<-c(2:3,5:6,9:29,31,33,35)
-import[2,24]
-class_of_country <- cut(import[kraje,24],9)
-class_of_country[9]
-as.numeric(class_of_country)
-Kol_Mapa<-vector()
-Kol_Mapa[1:50] <- "#FFFFFF"
-Kol_Mapa[idi] <- kolorki[as.numeric(class_of_country)]
-Kol_Mapa
+
 for (i in 1:30){
 # Attribute the appropriate color to each country
-class_of_country <- cut(import[kraje,i], 9)
+Barwa_od_Importu <- cut(import[kraje,i], 100)
+Kol_Mapa<-vector()
 Kol_Mapa[1:50] <- "#FFFFFF"
-print(as.numeric(class_of_country))
-Kol_Mapa[idi] <- kolorki[as.numeric(class_of_country)]
+Kol_Mapa[idi] <- kolorki[as.numeric(Barwa_od_Importu)]
 # Make the plot
 png(file=paste(i,"_mapa.png",sep=""))
 plot(Europa, col=Kol_Mapa ,  bg = "#A6CAE0", xlab=colnames(import)[i])
 dev.off()
 }
-plot(Europa, col=Kol_Mapa ,  bg = "#A6CAE0", xlab=colnames(import)[i])
+
+
