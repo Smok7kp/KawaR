@@ -1,0 +1,4 @@
+"Import_min" "1991"
+"Import_max" "2019"
+"Eksport_min" "1995"
+"Eksport_max" "2019"

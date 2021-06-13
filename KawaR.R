@@ -24,6 +24,8 @@ for (n in 1:30){ #jest 30 lat
 
 wide<- cbind(as.vector(t(as.numeric(colnames(import)))),w1) #dodajemy lata do wspolczynnika dla przejrzystosci
 var(wide[,2]) #patrzymy na odchylenie
+write.table(wide,file="wspolczynnik importu do eksportu.txt",row.names = FALSE, col.names = FALSE) #wypisujemy wspó³czynnik do pliku
+
 #Wykres slopkowy z linia wyznacznika
 
 #przygotujemy ramkê dane pod wykres
@@ -55,12 +57,14 @@ ggplot(dane_graf_1) +
   
 #ggsave(file="wykres.eps",device="eps", path="/Users/wiktor/Desktop/KawaR", width=20, height=20, units="cm")
 
+
 #min max
-names(import)[which(as.vector(t(import[37,])) == min(as.vector(t(import[37,]))))] #min import
-names(import)[which(as.vector(t(import[37,])) == max(as.vector(t(import[37,]))))] #max import
-names(eksport)[which(as.vector(t(eksport[56,])) == min(as.vector(t(eksport[56,]))))] #min eksport
-names(eksport)[which(as.vector(t(eksport[56,])) == max(as.vector(t(eksport[56,]))))] #max eksport
+ekstrema<-rbind(c("Import_min",names(import)[which(as.vector(t(import[37,])) == min(as.vector(t(import[37,]))))])) #min import
+ekstrema<-rbind(ekstrema,c("Import_max",names(import)[which(as.vector(t(import[37,])) == max(as.vector(t(import[37,]))))])) #max import
+ekstrema<-rbind(ekstrema,c("Eksport_min",names(eksport)[which(as.vector(t(eksport[56,])) == min(as.vector(t(eksport[56,]))))])) #min eksport
+ekstrema<-rbind(ekstrema,c("Eksport_max",names(eksport)[which(as.vector(t(eksport[56,])) == max(as.vector(t(eksport[56,]))))])) #max eksport
 #lata w ktorych mamy ekstrema przydaja nam sie w dlaszej pracy
+write.table(ekstrema,file="Lata ekstrem.txt",row.names = FALSE, col.names = FALSE) #wypisujemy ekstrema do pliku
 
 #Mapa swiata z krajami importujacymi/eksportujacymi
 
