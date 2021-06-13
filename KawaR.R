@@ -97,12 +97,14 @@ kolorki <- brewer.pal(9, "YlOrRd")
 kolorki <- colorRampPalette(kolorki)(32)
 
 kraje<-c(3:4,6:8,10:32,34:37)
+
+for (i in 30){
 # Attribute the appropriate color to each country
-class_of_country <- cut(import[kraje,15], 32)
-class_of_country
+class_of_country <- cut(import[kraje,i], 32)
 my_colors[1:246] <- "#FFFFFF"
 my_colors[idi] <- kolorki[as.numeric(class_of_country)]
-kolorki[as.numeric(class_of_country)]
 # Make the plot
+png(file=paste(i,"_plocik.png"))
 plot(my_spdf, col=my_colors ,  bg = "#A6CAE0")
-
+}
+dev.off()
