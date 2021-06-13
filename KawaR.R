@@ -70,7 +70,7 @@ names(eksport)[which(as.vector(t(eksport[56,])) == max(as.vector(t(eksport[56,])
 
 max(as.vector(t(import[37,])))
 max(as.vector(t(eksport[56,])))
-getwd()
+
 #install.packages("rgdal")
 library(rgdal)
 my_spdf <- readOGR( 
@@ -79,42 +79,30 @@ my_spdf <- readOGR(
   verbose=FALSE
 )
 
-#install.packages("broom")
-library(broom)
-library(maptools)
-if (!require(gpclib)) install.packages("gpclib", type="source")
-gpclibPermit()
-spdf_fortified <- tidy(my_spdf, region = "NAME")
+my_spdf@data$NAME
+my_spdf@data[my_spdf@data$NAME==gsub("   ", "", rownames(import)[35]),]
 
-africa <- my_spdf[my_spdf@data$REGION==2 , ]
-plot(africa , xlim=c(-20,60) , ylim=c(-40,40))
+Import_mapd <- my_spdf@data[my_spdf@data$NAME==gsub("   ", "", rownames(import)[2]),]
+for (n in 3:37){
+  Import_mapd <- rbind(Import_mapd,my_spdf@data[my_spdf@data$NAME==gsub("   ", "", rownames(import)[n]),])
+}
+Import_mapd
 
-# library
-library(dplyr)
-library(ggplot2)
-
-# Make sure the variable you are studying is numeric
-my_spdf@data$POP2005 <- as.numeric( my_spdf@data$POP2005 )
-
-# Distribution of the population per country?
-my_spdf@data %>% 
-  ggplot( aes(x=as.numeric(POP2005))) + 
-  geom_histogram(bins=20, fill='#69b3a2', color='white')
+idi<-as.numeric(rownames(Import_mapd))+1
+idi
 
 # Palette of 30 colors
 library(RColorBrewer)
-my_colors <- brewer.pal(9, "Reds") 
-my_colors <- colorRampPalette(my_colors)(2)
-my_colors
+kolorki <- brewer.pal(9, "YlOrRd") 
+kolorki <- colorRampPalette(kolorki)(32)
+
+kraje<-c(3:4,6:8,10:32,34:37)
 # Attribute the appropriate color to each country
-class_of_country <- cut(my_spdf@data$POP2005, 30)
-my_colors <- my_colors[as.numeric(class_of_country)]
-my_colors
+class_of_country <- cut(import[kraje,15], 32)
+class_of_country
+my_colors[1:246] <- "#FFFFFF"
+my_colors[idi] <- kolorki[as.numeric(class_of_country)]
+kolorki[as.numeric(class_of_country)]
 # Make the plot
 plot(my_spdf, col=my_colors ,  bg = "#A6CAE0")
-for (n in 1:36){
-print(my_spdf@data[my_spdf@data$NAME==gsub("   ", "", rownames(import)[n]),])
-}
-rownames(import)[3]
-gsub("   ", "", rownames(import)[3])
-my_spdf@data[my_spdf@data$NAME==gsub("   ", "", rownames(import)[3]),]
+
