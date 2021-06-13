@@ -23,7 +23,7 @@ for (n in 1:30){ #jest 30 lat
 }
 
 wide<- cbind(as.vector(t(as.numeric(colnames(import)))),w1) #dodajemy lata do wspolczynnika dla przejrzystosci
-
+var(wide[,2]) #patrzymy na odchylenie
 #Wykres slopkowy z linia wyznacznika
 
 #przygotujemy ramkê dane pod wykres
