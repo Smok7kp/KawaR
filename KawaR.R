@@ -24,12 +24,12 @@ for (n in 1:30){ #jest 30 lat
 
 wide<- cbind(as.vector(t(as.numeric(colnames(import)))),w1) #dodajemy lata do wspolczynnika dla przejrzystosci
 var(wide[,2]) #patrzymy na odchylenie
-write.table(wide,file="wspolczynnik importu do eksportu.txt",row.names = FALSE, col.names = FALSE) #wypisujemy wsp�czynnik do pliku
+write.table(wide,file="wspolczynnik importu do eksportu.txt",row.names = FALSE, col.names = FALSE) #wypisujemy wsp??czynnik do pliku
 
 #Wykres slopkowy z linia wyznacznika
 
-#przygotujemy ramk� dane pod wykres
-(r1 <- rep(1990:2019, times=2)) #pierwsza kolumna to ka�da data powtorzona po sobie dwa razy
+#przygotujemy ramke danych pod wykres
+(r1 <- rep(1990:2019, times=2)) #pierwsza kolumna to ka?da data powtorzona po sobie dwa razy
 (rok <- sort(r1)) #uzyskujemy to powtarzajac zestaw wszystkich lat dwa razy i sortujac
 (legenda <- rep(c("import","eksport"), times=30)) #podobnie druga kolumna to frazy import i eksport powtarzane w kolko
 il1<-vector() #trzecia kolumna to wartosci importu i eksportu dla kazdego roku
@@ -56,7 +56,7 @@ ggplot(dane_graf_1) +
   geom_line(aes(x=rok, y=wspolczynnik)) #i linie przedstawiajaca wspolczynnik
   
 #ggsave(file="wykres.eps",device="eps", path="/Users/wiktor/Desktop/KawaR", width=20, height=20, units="cm")
-
+#jesli chcemy zapisac wykres to mozemy
 
 #min max
 ekstrema<-rbind(c("Import_min",names(import)[which(as.vector(t(import[37,])) == min(as.vector(t(import[37,]))))])) #min import
@@ -103,11 +103,11 @@ Kol_Import[1:50] <- "#FFFFFF" #wypelniamy wszytko na bialo
 Kol_Import[idimport] <- paleta[as.numeric(Barwa_od_Importu)] #po kolei do odpowiednich indeksow wpisujemy kolor zaleznie od ilosci improtu
 #rysowanie z zapisywanie
 png(file=paste("i_",i,"_mapa.png",sep="")) #nazwa z indeksem by nie nadpisywalo
-plot(Europa, col=Kol_Import ,  bg = "#A6CAE0", xlab=colnames(import)[i]) #bardzo prosta fukcja, przyjmuje mape konturowa europy, odpowiednio sperparowane kolory i kolor t�a, by moc je odruznic, podpisane takze rokiem by bylo widac zmiane gdy dane zmieniaj sie nieznacznie
+plot(Europa, col=Kol_Import ,  bg = "#A6CAE0", xlab=colnames(import)[i]) #bardzo prosta fukcja, przyjmuje mape konturowa europy, odpowiednio sperparowane kolory i kolor t?a, by moc je odruznic, podpisane takze rokiem by bylo widac zmiane gdy dane zmieniaj sie nieznacznie
 dev.off()
 }
 
-#Eksport (pomijamy komentarze, kt�re by by�y takie same)
+#Eksport (pomijamy komentarze, kt?re by by?y takie same)
 
 Kraje_z_eksportem <- kontor@data[kontor@data$NAME==gsub("   ", "", rownames(eksport)[1]),]
 for (n in 2:54){
@@ -131,4 +131,61 @@ dev.off()
 }
 
 
+#Wykres kolowy eksportu
+#install.packages("scales")
+library(scales) #wczytuje pakiet, z ktorego funkcje pozwola mi sumowac wartosci w rzedach i kolumnach
+
+#utworzenie ramek danych zawierajacych panstwa i sumy wyeksportowanych paczek kawy w latach 1990-2019 i przypisanie ich
+#do zmiennych o nazwach kontynentow (dane byly wybierane z ramki danych o nazwie „eksport”, a panstwa odpowiednio 
+#przypisane do kontynentów na ktorych sie znajduja)
+
+(ameryka_polnocna <- rowSums(eksport[c(11,20,24,33,35,37),]))
+(ameryka_poludniowa <- rowSums(eksport[c(2,3,7,14,22,39,40,49,51),]))
+(ameryka_centralna <- rowSums(eksport[c(9,13,15,23,27),]))
+(afryka <- rowSums(eksport[c(1,4,5,6,8,10,12,16,17,18,19,21,28,30,31,32,36,42,43,45,48,50,54,55),]))
+(azja <- rowSums(eksport[c(25,26,29,34,41,44,46,47,52,53),]))
+(australia_i_oceania <- rowSums(eksport[c(38),]))
+
+#zsumowanie danych liczbowych dla kazdego kontynentu
+(ameryka_polnocna <- colSums(as.data.frame(ameryka_polnocna)))
+(ameryka_poludniowa <- colSums(as.data.frame(ameryka_poludniowa)))
+(ameryka_centralna <- colSums(as.data.frame(ameryka_centralna)))
+(afryka <- colSums(as.data.frame(afryka)))
+(azja <- colSums(as.data.frame(azja)))
+(australia_i_oceania <- colSums(as.data.frame(australia_i_oceania)))
+
+#utworzenie ramki danych o nazwie „kontynenty”, z ktorej pozniej wybrane zostana osobno nazwy kolumn i dane liczbowe 
+#i przypisane do zmiennych potrzebnych do utworzenia wykresu
+(kontynenty <- data.frame(ameryka_polnocna,ameryka_poludniowa,ameryka_centralna,afryka,azja,australia_i_oceania))
+
+(wartosci<-as.numeric(kontynenty))
+pie_labels <- (paste0(round(100 * wartosci/sum(wartosci), 2), "%"))
+
+#install.packages("RColorBrewer")
+library(RColorBrewer) #wczytuje pakiet zawierajacy w sobie palety barw
+myPalette <- brewer.pal(6, "Set2")
+
+#tworzenie wykresu
+pie(wartosci, labels = pie_labels, border="white", col=myPalette, values="%",
+    main="Procentowy udział kontynentów eksportujących kawę w latach 1990-2019")
+legend(1.1, 1, legend = c("Ameryka Północna", "Ameryka Południowa", "Ameryka Centralna", "Afryka", "Azja", "Australia i Oceania"), 
+       fill =  myPalette, cex=0.7)
+
+#Wykres kolowy dla importu
+(europa <- rowSums(import[c(2:29, 31, 33, 35),]))
+(europa <- as.data.frame(europa))
+
+(wartosci_europa <- europa[,1])
+(panstwa <- rownames(europa))
+
+panstwa2 <- vector()
+for(i in 1:31){
+  (panstwa2[i] <- (paste(i,panstwa[i], sep=" ", round(100 * wartosci_europa[i]/sum(wartosci_europa), 2), "%")))
+}
+panstwa2
+wartosci_europa[14]
+
+pie(wartosci_europa, border="white", col=rainbow(31), values="%", cex=0.8,
+    main="Procentowy udział państw importujących kawę w latach 1990-2019")
+legend(1.1, 1, legend=panstwa2, fill=rainbow(31), cex=0.37)
 
