@@ -79,12 +79,12 @@ my_spdf <- readOGR(
   verbose=FALSE
 )
 
-my_spdf@data$NAME
-my_spdf@data[my_spdf@data$NAME==gsub("   ", "", rownames(import)[35]),]
+Europa <- my_spdf[my_spdf@data$REGION==150 & my_spdf@data$NAME!="Russia" , ]
+rownames(Europa@data) <- 1:nrow(Europa@data)
 
-Import_mapd <- my_spdf@data[my_spdf@data$NAME==gsub("   ", "", rownames(import)[2]),]
+Import_mapd <- Europa@data[Europa@data$NAME==gsub("   ", "", rownames(import)[2]),]
 for (n in 3:37){
-  Import_mapd <- rbind(Import_mapd,my_spdf@data[my_spdf@data$NAME==gsub("   ", "", rownames(import)[n]),])
+  Import_mapd <- rbind(Import_mapd,Europa@data[Europa@data$NAME==gsub("   ", "", rownames(import)[n]),])
 }
 Import_mapd
 
@@ -94,17 +94,26 @@ idi
 # Palette of 30 colors
 library(RColorBrewer)
 kolorki <- brewer.pal(9, "YlOrRd") 
-kolorki <- colorRampPalette(kolorki)(32)
-
-kraje<-c(3:4,6:8,10:32,34:37)
-
-for (i in 30){
+kolorki <- colorRampPalette(kolorki)(9)
+kolorki
+kraje<-c(2:3,5:6,9:29,31,33,35)
+import[2,24]
+class_of_country <- cut(import[kraje,24],9)
+class_of_country[9]
+as.numeric(class_of_country)
+Kol_Mapa<-vector()
+Kol_Mapa[1:50] <- "#FFFFFF"
+Kol_Mapa[idi] <- kolorki[as.numeric(class_of_country)]
+Kol_Mapa
+for (i in 1:30){
 # Attribute the appropriate color to each country
-class_of_country <- cut(import[kraje,i], 32)
-my_colors[1:246] <- "#FFFFFF"
-my_colors[idi] <- kolorki[as.numeric(class_of_country)]
+class_of_country <- cut(import[kraje,i], 9)
+Kol_Mapa[1:50] <- "#FFFFFF"
+print(as.numeric(class_of_country))
+Kol_Mapa[idi] <- kolorki[as.numeric(class_of_country)]
 # Make the plot
-png(file=paste(i,"_plocik.png"))
-plot(my_spdf, col=my_colors ,  bg = "#A6CAE0")
-}
+png(file=paste(i,"_mapa.png",sep=""))
+plot(Europa, col=Kol_Mapa ,  bg = "#A6CAE0", xlab=colnames(import)[i])
 dev.off()
+}
+plot(Europa, col=Kol_Mapa ,  bg = "#A6CAE0", xlab=colnames(import)[i])
